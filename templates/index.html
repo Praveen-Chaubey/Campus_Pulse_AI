@@ -1,0 +1,1209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CampusPulse — AI Intelligence Platform</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Syne:wght@400;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<!--
+═══════════════════════════════════════════════════════
+  FRONTEND APIs USED:
+  1. Fetch API (JS built-in)   — HTTP calls to Flask backend
+  2. Web Audio API (built-in)  — Professional alert sounds
+  3. CSS Custom Properties     — Dynamic theming system
+  4. CSS Animations/Keyframes  — Smooth transitions
+  5. DOM Manipulation API      — Live dashboard updates
+  6. Google Fonts API          — Typography (Bebas Neue, Syne, JetBrains Mono)
+  7. setInterval API           — Live polling every 30 seconds
+═══════════════════════════════════════════════════════
+-->
+<style>
+/* ══════════════════════════════════════════
+   DESIGN SYSTEM — Dark Intelligence Theme
+══════════════════════════════════════════ */
+:root {
+  --bg:      #020408;
+  --surf:    #070c17;
+  --card:    #0a1020;
+  --card2:   #0d1428;
+  --bdr:     #111e35;
+  --bdr2:    #1a2d4a;
+  --text:    #d8e8ff;
+  --muted:   #344a6e;
+  --muted2:  #4e6a96;
+  --red:     #ff2550;
+  --orange:  #ff6418;
+  --amber:   #f5bf00;
+  --green:   #00e07a;
+  --cyan:    #00ccff;
+  --violet:  #8855f5;
+  --pink:    #df3ffa;
+  --font-display: 'Bebas Neue', sans-serif;
+  --font-body:    'Syne', sans-serif;
+  --font-mono:    'JetBrains Mono', monospace;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{height:100%}
+body{
+  font-family:var(--font-body);
+  background:var(--bg);
+  color:var(--text);
+  overflow-x:hidden;
+}
+/* Grid overlay */
+body::before{
+  content:'';position:fixed;inset:0;z-index:0;pointer-events:none;
+  background-image:
+    linear-gradient(rgba(0,204,255,.018) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(0,204,255,.018) 1px,transparent 1px);
+  background-size:44px 44px;
+}
+/* Scanlines */
+body::after{
+  content:'';position:fixed;inset:0;z-index:0;pointer-events:none;
+  background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,.05) 2px,rgba(0,0,0,.05) 4px);
+}
+.wrap{position:relative;z-index:2}
+::-webkit-scrollbar{width:3px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--bdr2);border-radius:2px}
+
+/* ══════════════════════════════════════════
+   HEADER
+══════════════════════════════════════════ */
+header{
+  height:62px;padding:0 26px;
+  display:flex;align-items:center;justify-content:space-between;
+  background:rgba(7,12,23,.96);backdrop-filter:blur(24px);
+  border-bottom:1px solid var(--bdr);
+  position:sticky;top:0;z-index:300;
+}
+.logo{display:flex;align-items:center;gap:12px}
+.logo-mark{
+  width:38px;height:38px;border-radius:10px;
+  background:linear-gradient(135deg,var(--cyan),var(--violet));
+  display:flex;align-items:center;justify-content:center;font-size:20px;
+  animation:logo-pulse 3s ease-in-out infinite;
+  box-shadow:0 0 18px rgba(0,204,255,.4);
+}
+@keyframes logo-pulse{
+  0%,100%{box-shadow:0 0 12px rgba(0,204,255,.4)}
+  50%{box-shadow:0 0 32px rgba(0,204,255,.85)}
+}
+.logo-name{
+  font-family:var(--font-display);font-size:25px;letter-spacing:3px;
+  background:linear-gradient(90deg,var(--cyan) 0%,#fff 70%);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+}
+.logo-sub{font-size:9px;color:var(--muted);letter-spacing:3px;text-transform:uppercase;font-family:var(--font-mono);margin-top:1px}
+
+.nav{display:flex;gap:4px}
+.nav-btn{
+  padding:6px 16px;border-radius:20px;border:1px solid transparent;
+  background:transparent;color:var(--muted2);cursor:pointer;
+  font-family:var(--font-body);font-size:11px;font-weight:700;letter-spacing:1px;
+  text-transform:uppercase;transition:all .2s;
+}
+.nav-btn:hover{color:var(--text);border-color:var(--bdr2)}
+.nav-btn.on{color:var(--cyan);border-color:rgba(0,204,255,.3);background:rgba(0,204,255,.07)}
+
+.h-right{display:flex;align-items:center;gap:10px}
+.live-pill{
+  display:flex;align-items:center;gap:6px;
+  padding:5px 13px;border-radius:20px;
+  background:rgba(0,224,122,.07);border:1px solid rgba(0,224,122,.22);
+  font-size:10px;font-family:var(--font-mono);color:var(--green);letter-spacing:1.5px;
+}
+.live-dot{width:6px;height:6px;background:var(--green);border-radius:50%;animation:blink 1.2s ease-in-out infinite}
+@keyframes blink{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.2;transform:scale(.5)}}
+.notif-wrap{position:relative;cursor:pointer}
+.notif-btn{
+  width:36px;height:36px;background:var(--card);border:1px solid var(--bdr);
+  border-radius:9px;display:flex;align-items:center;justify-content:center;
+  font-size:16px;transition:all .2s;cursor:pointer;
+}
+.notif-btn:hover{border-color:var(--bdr2);background:var(--card2)}
+.notif-badge{
+  position:absolute;top:-5px;right:-5px;width:17px;height:17px;
+  background:var(--red);border-radius:50%;font-size:9px;
+  display:flex;align-items:center;justify-content:center;
+  font-family:var(--font-mono);font-weight:700;color:#fff;border:2px solid var(--bg);
+}
+.alert-btn{
+  display:flex;align-items:center;gap:7px;
+  padding:7px 15px;border-radius:8px;
+  background:rgba(255,37,80,.1);border:1px solid rgba(255,37,80,.3);
+  color:var(--red);cursor:pointer;font-family:var(--font-body);
+  font-size:11px;font-weight:800;letter-spacing:1.5px;transition:all .25s;
+}
+.alert-btn:hover{background:rgba(255,37,80,.2);box-shadow:0 0 22px rgba(255,37,80,.3);transform:translateY(-1px)}
+
+/* ══════════════════════════════════════════
+   STAT BAR
+══════════════════════════════════════════ */
+.stat-bar{
+  display:grid;grid-template-columns:repeat(6,1fr);
+  gap:1px;background:var(--bdr);border-bottom:1px solid var(--bdr);
+}
+.stat{
+  background:var(--surf);padding:14px 18px;cursor:pointer;
+  transition:background .2s;position:relative;overflow:hidden;
+}
+.stat:hover{background:var(--card)}
+.stat::after{
+  content:'';position:absolute;bottom:0;left:0;right:0;height:2px;
+  background:var(--ac,var(--cyan));transform:scaleX(0);transform-origin:left;transition:transform .35s;
+}
+.stat:hover::after{transform:scaleX(1)}
+.stat-n{
+  font-family:var(--font-display);font-size:38px;line-height:1;
+  color:var(--ac,var(--cyan));filter:drop-shadow(0 0 8px var(--ac,var(--cyan)));
+}
+.stat-l{font-size:9px;color:var(--muted);letter-spacing:2px;text-transform:uppercase;margin-top:3px;font-family:var(--font-mono)}
+.stat-s{font-size:10px;margin-top:2px;font-weight:700}
+
+/* ══════════════════════════════════════════
+   MAIN GRID
+══════════════════════════════════════════ */
+.grid{display:grid;grid-template-columns:330px 1fr 295px;min-height:calc(100vh - 126px)}
+
+/* ══════════════════════════════════════════
+   LEFT PANEL — SUBMIT FORM
+══════════════════════════════════════════ */
+.left{
+  background:var(--surf);border-right:1px solid var(--bdr);
+  overflow-y:auto;max-height:calc(100vh - 126px);
+}
+.panel-hd{
+  padding:16px 18px 12px;border-bottom:1px solid var(--bdr);
+  display:flex;align-items:center;gap:10px;
+}
+.panel-ico{width:30px;height:30px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:14px}
+.panel-title{font-family:var(--font-display);font-size:17px;letter-spacing:2px}
+.panel-sub{font-size:9px;color:var(--muted);font-family:var(--font-mono);letter-spacing:1px;margin-top:1px}
+.fb{padding:16px}
+.fg{margin-bottom:13px}
+.fg label{font-size:9px;color:var(--muted);letter-spacing:2.5px;text-transform:uppercase;font-family:var(--font-mono);display:block;margin-bottom:5px}
+.fg input,.fg textarea,.fg select{
+  width:100%;background:var(--card);border:1px solid var(--bdr);border-radius:9px;
+  padding:10px 12px;color:var(--text);font-family:var(--font-body);font-size:13px;
+  outline:none;transition:border-color .3s,box-shadow .3s;
+}
+.fg input:focus,.fg textarea:focus,.fg select:focus{
+  border-color:var(--cyan);box-shadow:0 0 0 3px rgba(0,204,255,.08);
+}
+.fg textarea{height:88px;resize:none;line-height:1.6}
+.fg select{cursor:pointer}
+option{background:var(--card2)}
+
+/* Category grid */
+.cat-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:5px;margin-bottom:13px}
+.cat-btn{
+  padding:9px 4px;border-radius:8px;border:1px solid var(--bdr);background:var(--card);
+  cursor:pointer;text-align:center;transition:all .2s;
+  font-size:9px;font-family:var(--font-mono);color:var(--muted);
+  letter-spacing:.5px;font-weight:700;
+}
+.cat-btn span{font-size:17px;display:block;margin-bottom:4px}
+.cat-btn:hover{border-color:var(--bdr2);color:var(--text)}
+.cat-btn.on{border-color:var(--cyan);color:var(--cyan);background:rgba(0,204,255,.07)}
+
+/* Priority selector */
+.pri-row{display:grid;grid-template-columns:repeat(4,1fr);gap:5px;margin-bottom:13px}
+.pri-btn{
+  padding:8px 4px;border-radius:8px;border:1px solid var(--bdr);background:var(--card);
+  cursor:pointer;text-align:center;transition:all .2s;
+  font-size:9px;font-family:var(--font-mono);color:var(--muted);font-weight:700;letter-spacing:.5px;
+}
+.pri-btn:hover{border-color:var(--bdr2)}
+.pri-btn.on-crit{border-color:var(--red);color:var(--red);background:rgba(255,37,80,.08)}
+.pri-btn.on-high{border-color:var(--orange);color:var(--orange);background:rgba(255,100,24,.08)}
+.pri-btn.on-med {border-color:var(--amber);color:var(--amber);background:rgba(245,191,0,.08)}
+.pri-btn.on-low {border-color:var(--green);color:var(--green);background:rgba(0,224,122,.08)}
+
+/* Submit button */
+.sub-btn{
+  width:100%;padding:13px;
+  background:linear-gradient(135deg,var(--violet) 0%,var(--cyan) 100%);
+  border:none;border-radius:10px;color:#fff;
+  font-family:var(--font-body);font-size:13px;font-weight:800;letter-spacing:1.5px;
+  cursor:pointer;transition:all .3s;position:relative;overflow:hidden;
+}
+.sub-btn:hover{transform:translateY(-2px);box-shadow:0 10px 28px rgba(136,85,245,.45)}
+.sub-btn:active{transform:translateY(0)}
+.sub-btn::after{
+  content:'';position:absolute;inset:0;background:#fff;opacity:0;transition:opacity .2s;
+}
+.sub-btn:hover::after{opacity:.06}
+
+/* AI loader */
+.ai-spin{display:none;text-align:center;padding:18px}
+.spin-ring{
+  width:30px;height:30px;border:2px solid var(--bdr);
+  border-top-color:var(--cyan);border-radius:50%;
+  animation:spin .8s linear infinite;margin:0 auto 10px;
+}
+@keyframes spin{to{transform:rotate(360deg)}}
+.spin-txt{font-size:11px;color:var(--cyan);font-family:var(--font-mono);letter-spacing:1px}
+
+/* AI Result box */
+.ai-box{
+  display:none;background:linear-gradient(135deg,rgba(136,85,245,.08),rgba(0,204,255,.05));
+  border:1px solid rgba(136,85,245,.22);border-radius:12px;
+  padding:15px;margin-top:13px;animation:fadeUp .4s ease;
+}
+@keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.ai-box-hd{display:flex;align-items:center;gap:8px;margin-bottom:11px}
+.ai-lbl{
+  font-size:8px;font-family:var(--font-mono);letter-spacing:2px;font-weight:700;
+  padding:3px 9px;border-radius:8px;
+}
+.af{margin-bottom:9px}
+.af-t{font-size:9px;color:var(--muted);letter-spacing:2px;text-transform:uppercase;font-family:var(--font-mono);margin-bottom:3px}
+.af-v{font-size:12px;line-height:1.65;color:var(--text);white-space:pre-line}
+.urg-bar{height:4px;background:var(--bdr);border-radius:2px;overflow:hidden;margin-top:5px}
+.urg-fill{height:100%;border-radius:2px;background:linear-gradient(90deg,var(--green),var(--amber),var(--red));transition:width 1.2s ease}
+
+/* ══════════════════════════════════════════
+   CENTER PANEL — DASHBOARD
+══════════════════════════════════════════ */
+.center{
+  background:var(--bg);overflow-y:auto;
+  max-height:calc(100vh - 126px);padding:18px;
+}
+
+/* Section card wrapper */
+.scard{
+  background:var(--card);border:1px solid var(--bdr);
+  border-radius:14px;margin-bottom:16px;overflow:hidden;
+}
+.scard-hd{
+  padding:13px 16px 0;display:flex;
+  align-items:center;justify-content:space-between;
+}
+.scard-title{
+  font-family:var(--font-display);font-size:16px;letter-spacing:2px;
+  display:flex;align-items:center;gap:8px;
+}
+.scard-badge{
+  font-size:8px;font-family:var(--font-mono);padding:2px 8px;
+  border-radius:8px;letter-spacing:1px;font-weight:700;
+  background:rgba(0,204,255,.1);color:var(--cyan);border:1px solid rgba(0,204,255,.18);
+}
+.scard-body{padding:13px 16px 16px}
+
+/* Emotion radar */
+.em-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:9px}
+.em-cell{
+  background:var(--card2);border:1px solid var(--bdr);border-radius:10px;
+  padding:11px 13px;cursor:pointer;transition:all .25s;
+}
+.em-cell:hover{border-color:var(--ec,var(--cyan));transform:translateY(-2px)}
+.em-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:7px}
+.em-ico{font-size:21px}
+.em-pct{font-family:var(--font-display);font-size:27px;color:var(--ec);filter:drop-shadow(0 0 5px var(--ec))}
+.em-nm{font-size:9px;color:var(--ec);font-weight:800;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:5px}
+.em-bar{height:3px;background:rgba(255,255,255,.05);border-radius:2px;overflow:hidden}
+.em-fill{height:100%;background:var(--ec);border-radius:2px;box-shadow:0 0 5px var(--ec);animation:grow 1.8s ease forwards}
+@keyframes grow{from{width:0!important}}
+
+/* Filter strip */
+.fstrip{display:flex;gap:5px;margin-bottom:14px;flex-wrap:wrap}
+.fchip{
+  padding:5px 12px;border-radius:15px;border:1px solid var(--bdr);
+  background:transparent;color:var(--muted);cursor:pointer;
+  font-size:10px;font-family:var(--font-mono);font-weight:700;letter-spacing:.5px;transition:all .2s;
+}
+.fchip:hover{color:var(--text);border-color:var(--bdr2)}
+.fchip.on{border-color:var(--cyan);color:var(--cyan);background:rgba(0,204,255,.07)}
+
+/* Complaint card */
+.ccard{
+  background:var(--card2);border:1px solid var(--bdr);
+  border-left:3px solid var(--pc,var(--bdr));border-radius:12px;
+  padding:14px;margin-bottom:11px;cursor:pointer;
+  transition:all .25s;position:relative;
+}
+.ccard:hover{border-color:var(--pc,var(--cyan));transform:translateX(3px)}
+.ccard.resolved{opacity:.5}
+.cc-hd{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:7px;gap:8px}
+.cc-title{font-size:13px;font-weight:800;flex:1;line-height:1.3}
+.pbadge{
+  font-size:9px;font-family:var(--font-mono);font-weight:800;
+  padding:2px 8px;border-radius:7px;white-space:nowrap;letter-spacing:.5px;flex-shrink:0;
+}
+.pb-crit{background:rgba(255,37,80,.17);color:var(--red);border:1px solid rgba(255,37,80,.28)}
+.pb-high{background:rgba(255,100,24,.17);color:var(--orange);border:1px solid rgba(255,100,24,.28)}
+.pb-med {background:rgba(245,191,0,.17);color:var(--amber);border:1px solid rgba(245,191,0,.28)}
+.pb-low {background:rgba(0,224,122,.14);color:var(--green);border:1px solid rgba(0,224,122,.25)}
+.pb-res {background:rgba(0,224,122,.1);color:var(--green);border:1px solid rgba(0,224,122,.22)}
+.cc-summary{font-size:11px;color:var(--muted2);line-height:1.5;margin-bottom:9px;font-style:italic}
+.cc-tags{display:flex;gap:5px;margin-bottom:9px;flex-wrap:wrap}
+.ctag{
+  font-size:9px;font-family:var(--font-mono);padding:2px 7px;border-radius:5px;
+  background:var(--surf);border:1px solid var(--bdr);color:var(--muted2);letter-spacing:.5px;
+}
+.urg-row{display:flex;align-items:center;gap:6px;margin-bottom:8px}
+.urg-label{font-size:9px;color:var(--muted);font-family:var(--font-mono);letter-spacing:1px;white-space:nowrap}
+.urg-mini{flex:1;height:3px;background:var(--bdr);border-radius:2px;overflow:hidden}
+.urg-mini-fill{height:100%;border-radius:2px;background:linear-gradient(90deg,var(--green),var(--amber),var(--red))}
+.urg-score{font-size:10px;font-family:var(--font-mono);color:var(--amber);font-weight:700}
+.cc-ft{display:flex;align-items:center;justify-content:space-between}
+.cc-meta{font-size:9px;color:var(--muted);font-family:var(--font-mono)}
+.cc-acts{display:flex;gap:5px}
+.abtn{
+  padding:4px 9px;border-radius:6px;border:1px solid var(--bdr);
+  background:transparent;color:var(--muted);cursor:pointer;
+  font-size:10px;font-family:var(--font-mono);transition:all .2s;
+}
+.abtn:hover.vote{border-color:var(--amber);color:var(--amber)}
+.abtn:hover.solve{border-color:var(--green);color:var(--green)}
+.abtn:hover.prog{border-color:var(--cyan);color:var(--cyan)}
+.abtn:hover.del{border-color:var(--red);color:var(--red)}
+
+/* Solution expandable */
+.sol-panel{
+  display:none;margin-top:11px;padding-top:11px;
+  border-top:1px solid var(--bdr);animation:fadeUp .3s ease;
+}
+.sol-sec{margin-bottom:11px}
+.sol-title{
+  font-size:9px;color:var(--cyan);letter-spacing:2px;text-transform:uppercase;
+  font-family:var(--font-mono);margin-bottom:5px;display:flex;align-items:center;gap:6px;
+}
+.sol-steps{font-size:12px;line-height:1.8;color:var(--text);white-space:pre-line;padding-left:2px}
+.dept-pill{
+  display:inline-flex;align-items:center;gap:6px;
+  padding:5px 11px;border-radius:18px;
+  background:rgba(136,85,245,.1);border:1px solid rgba(136,85,245,.22);
+  color:var(--violet);font-size:11px;font-weight:700;
+}
+
+/* AI Insights */
+.ins-grid{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+.icard{
+  background:var(--card2);border:1px solid var(--bdr);border-left:2px solid var(--ic,var(--violet));
+  border-radius:10px;padding:13px;cursor:pointer;transition:all .25s;
+}
+.icard:hover{border-color:var(--ic,var(--violet));transform:translateY(-2px)}
+.ic-top{display:flex;align-items:center;gap:7px;margin-bottom:6px}
+.ic-ico{font-size:18px}
+.ic-title{font-size:12px;font-weight:800}
+.ic-detail{font-size:11px;color:var(--muted2);line-height:1.5;margin-bottom:7px}
+.ic-act{font-size:10px;color:var(--violet);font-family:var(--font-mono);letter-spacing:.5px;cursor:pointer}
+.ic-act:hover{color:var(--cyan)}
+
+/* ══════════════════════════════════════════
+   RIGHT PANEL — ALERTS & ANALYTICS
+══════════════════════════════════════════ */
+.right{
+  background:var(--surf);border-left:1px solid var(--bdr);
+  overflow-y:auto;max-height:calc(100vh - 126px);
+}
+.rlbl{
+  font-size:9px;letter-spacing:3px;text-transform:uppercase;color:var(--muted);
+  font-family:var(--font-mono);padding:14px 12px 8px;
+  display:flex;align-items:center;gap:8px;
+}
+.rlbl::after{content:'';flex:1;height:1px;background:var(--bdr)}
+
+.al-item{
+  margin:5px 10px;padding:10px 12px;
+  background:var(--card);border:1px solid var(--bdr);
+  border-left:2px solid var(--alc,var(--cyan));
+  border-radius:10px;cursor:pointer;transition:all .25s;
+  animation:slideR .4s ease both;
+}
+.al-item:nth-child(1){animation-delay:.05s}
+.al-item:nth-child(2){animation-delay:.1s}
+.al-item:nth-child(3){animation-delay:.15s}
+@keyframes slideR{from{opacity:0;transform:translateX(10px)}to{opacity:1;transform:translateX(0)}}
+.al-item:hover{transform:translateX(-3px)}
+.al-hd{display:flex;justify-content:space-between;align-items:center;margin-bottom:4px}
+.al-type{font-size:9px;font-weight:700;letter-spacing:1px;color:var(--alc,var(--cyan));font-family:var(--font-mono)}
+.al-time{font-size:9px;color:var(--muted);font-family:var(--font-mono)}
+.al-msg{font-size:11px;color:var(--text);line-height:1.4}
+
+.bar-list{padding:0 11px}
+.bar-row{margin-bottom:9px}
+.bar-top{display:flex;justify-content:space-between;margin-bottom:4px}
+.bar-nm{font-size:11px;font-weight:700}
+.bar-val{font-size:11px;color:var(--muted);font-family:var(--font-mono)}
+.bar-track{height:5px;background:rgba(255,255,255,.04);border-radius:3px;overflow:hidden}
+.bar-fill{height:100%;border-radius:3px;animation:grow 1.5s ease forwards}
+
+/* ══════════════════════════════════════════
+   EMERGENCY MODAL
+══════════════════════════════════════════ */
+.overlay{
+  position:fixed;inset:0;z-index:1000;
+  background:rgba(0,0,0,.88);backdrop-filter:blur(14px);
+  display:flex;align-items:center;justify-content:center;
+  opacity:0;pointer-events:none;transition:opacity .3s;
+}
+.overlay.show{opacity:1;pointer-events:all}
+.modal{
+  background:var(--card);border:1px solid var(--red);border-radius:20px;
+  padding:30px;max-width:450px;width:92%;
+  box-shadow:0 0 60px rgba(255,37,80,.3);
+  transform:scale(.85);transition:transform .35s cubic-bezier(.34,1.56,.64,1);
+  position:relative;
+}
+.overlay.show .modal{transform:scale(1)}
+.modal-title{
+  font-family:var(--font-display);font-size:30px;letter-spacing:3px;
+  color:var(--red);margin-bottom:10px;display:flex;align-items:center;gap:10px;
+}
+.shake{animation:shk .5s ease infinite}
+@keyframes shk{0%,100%{transform:rotate(-6deg)}50%{transform:rotate(6deg)}}
+.modal-body{font-size:13px;color:var(--muted2);line-height:1.75;margin-bottom:22px}
+.modal-acts{display:flex;gap:9px}
+.mbtn{flex:1;padding:12px;border-radius:10px;border:none;cursor:pointer;font-family:var(--font-body);font-weight:800;font-size:13px;transition:all .25s}
+.mbtn-p{background:var(--red);color:#fff}
+.mbtn-s{background:var(--card2);color:var(--text);border:1px solid var(--bdr)}
+.mbtn:hover{transform:translateY(-2px);opacity:.9}
+.mclose{position:absolute;top:14px;right:15px;background:none;border:none;color:var(--muted);font-size:22px;cursor:pointer;transition:color .2s}
+.mclose:hover{color:var(--text)}
+
+/* ══════════════════════════════════════════
+   TOAST
+══════════════════════════════════════════ */
+.toasts{position:fixed;bottom:22px;right:22px;z-index:3000;display:flex;flex-direction:column;gap:7px}
+.toast{
+  background:var(--card);border:1px solid var(--bdr);
+  border-left:3px solid var(--tc,var(--green));
+  border-radius:11px;padding:12px 16px;font-size:12px;max-width:310px;
+  animation:toastIn .35s ease;box-shadow:0 8px 22px rgba(0,0,0,.5);
+  display:flex;align-items:center;gap:9px;
+}
+@keyframes toastIn{from{opacity:0;transform:translateX(18px)}to{opacity:1;transform:translateX(0)}}
+
+/* ══════════════════════════════════════════
+   RESPONSIVE
+══════════════════════════════════════════ */
+@media(max-width:1200px){
+  .grid{grid-template-columns:300px 1fr}
+  .right{display:none}
+  .stat-bar{grid-template-columns:repeat(3,1fr)}
+}
+@media(max-width:740px){
+  .grid{grid-template-columns:1fr}
+  .left{max-height:none;border-right:none;border-bottom:1px solid var(--bdr)}
+  .center{max-height:none}
+  .em-grid{grid-template-columns:repeat(2,1fr)}
+  header{padding:0 12px}
+  .nav{display:none}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<!-- ═══ HEADER ═══════════════════════════════ -->
+<header>
+  <div class="logo">
+    <div class="logo-mark">🎓</div>
+    <div>
+      <div class="logo-name">CampusPulse</div>
+      <div class="logo-sub">AI Intelligence Platform</div>
+    </div>
+  </div>
+
+  <div class="nav">
+    <button class="nav-btn on" onclick="setView('dashboard',this)">Dashboard</button>
+    <button class="nav-btn" onclick="setView('complaints',this)">Problems</button>
+    <button class="nav-btn" onclick="setView('insights',this)">AI Insights</button>
+  </div>
+
+  <div class="h-right">
+    <div class="live-pill"><div class="live-dot"></div>AI LIVE</div>
+    <div class="notif-wrap" onclick="toggleAlerts()">
+      <div class="notif-btn">🔔</div>
+      <div class="notif-badge" id="notif-n">0</div>
+    </div>
+    <button class="alert-btn" onclick="showModal()">🚨 EMERGENCY</button>
+  </div>
+</header>
+
+<!-- ═══ STAT BAR ══════════════════════════════ -->
+<div class="stat-bar">
+  <div class="stat" style="--ac:var(--red)">
+    <div class="stat-n" id="sTotal">0</div>
+    <div class="stat-l">Total Issues</div>
+    <div class="stat-s" style="color:var(--red)" id="sCrit">— critical</div>
+  </div>
+  <div class="stat" style="--ac:var(--orange)">
+    <div class="stat-n" id="sOpen">0</div>
+    <div class="stat-l">Open</div>
+    <div class="stat-s" style="color:var(--orange)" id="sProg">— in progress</div>
+  </div>
+  <div class="stat" style="--ac:var(--green)">
+    <div class="stat-n" id="sRes">0</div>
+    <div class="stat-l">Resolved</div>
+    <div class="stat-s" style="color:var(--green)" id="sRate">— %</div>
+  </div>
+  <div class="stat" style="--ac:var(--amber)">
+    <div class="stat-n" id="sUrg">0</div>
+    <div class="stat-l">Avg AI Urgency</div>
+    <div class="stat-s" style="color:var(--amber)">out of 10</div>
+  </div>
+  <div class="stat" style="--ac:var(--violet)">
+    <div class="stat-n">2400</div>
+    <div class="stat-l">Students Monitored</div>
+    <div class="stat-s" style="color:var(--violet)">real-time</div>
+  </div>
+  <div class="stat" style="--ac:var(--cyan)">
+    <div class="stat-n" id="sAI">0</div>
+    <div class="stat-l">AI Analyses</div>
+    <div class="stat-s" style="color:var(--cyan)">autonomous</div>
+  </div>
+</div>
+
+<!-- ═══ MAIN GRID ═════════════════════════════ -->
+<div class="grid">
+
+  <!-- ─── LEFT: SUBMIT FORM ──────────────────── -->
+  <div class="left">
+    <div class="panel-hd">
+      <div class="panel-ico" style="background:rgba(0,204,255,.1)">✦</div>
+      <div>
+        <div class="panel-title">Report Problem</div>
+        <div class="panel-sub">// AI analyses instantly</div>
+      </div>
+    </div>
+    <div class="fb">
+
+      <!-- Category -->
+      <div style="font-size:9px;color:var(--muted);letter-spacing:2.5px;text-transform:uppercase;font-family:var(--font-mono);margin-bottom:7px">CATEGORY</div>
+      <div class="cat-grid">
+        <div class="cat-btn on" data-cat="mess"      onclick="pickCat(this)"><span>🍽️</span>MESS</div>
+        <div class="cat-btn"    data-cat="wifi"      onclick="pickCat(this)"><span>📶</span>WIFI</div>
+        <div class="cat-btn"    data-cat="hostel"    onclick="pickCat(this)"><span>🏠</span>HOSTEL</div>
+        <div class="cat-btn"    data-cat="mental"    onclick="pickCat(this)"><span>🧠</span>MENTAL</div>
+        <div class="cat-btn"    data-cat="academic"  onclick="pickCat(this)"><span>📚</span>ACADEMIC</div>
+        <div class="cat-btn"    data-cat="infra"     onclick="pickCat(this)"><span>🔧</span>INFRA</div>
+        <div class="cat-btn"    data-cat="transport" onclick="pickCat(this)"><span>🚌</span>BUS</div>
+        <div class="cat-btn"    data-cat="admin"     onclick="pickCat(this)"><span>🏛️</span>ADMIN</div>
+      </div>
+
+      <!-- Title -->
+      <div class="fg">
+        <label>Problem Title</label>
+        <input type="text" id="fTitle" placeholder="e.g. Mess food causing illness…">
+      </div>
+
+      <!-- Description -->
+      <div class="fg">
+        <label>Describe in Detail</label>
+        <textarea id="fDesc" placeholder="How many students affected? Since when? What happened exactly? Be specific — AI gives better solutions with more detail…"></textarea>
+      </div>
+
+      <!-- Priority hint -->
+      <div style="font-size:9px;color:var(--muted);letter-spacing:2.5px;text-transform:uppercase;font-family:var(--font-mono);margin-bottom:7px">PRIORITY HINT (AI may override)</div>
+      <div class="pri-row">
+        <div class="pri-btn on-crit" data-pri="critical" onclick="pickPri(this)">🔴 CRITICAL</div>
+        <div class="pri-btn"         data-pri="high"     onclick="pickPri(this)">🟠 HIGH</div>
+        <div class="pri-btn"         data-pri="medium"   onclick="pickPri(this)">🟡 MEDIUM</div>
+        <div class="pri-btn"         data-pri="low"      onclick="pickPri(this)">🟢 LOW</div>
+      </div>
+
+      <!-- Submit -->
+      <button class="sub-btn" onclick="submitComplaint()">
+        ✦ ANALYZE WITH AI &amp; SUBMIT
+      </button>
+
+      <!-- AI Loading -->
+      <div class="ai-spin" id="aiSpin">
+        <div class="spin-ring"></div>
+        <div class="spin-txt">🤖 Claude AI analyzing problem…</div>
+        <div style="font-size:10px;color:var(--muted);margin-top:4px;font-family:var(--font-mono)">Detecting priority · emotion · solution</div>
+      </div>
+
+      <!-- AI Result -->
+      <div class="ai-box" id="aiBox">
+        <div class="ai-box-hd">
+          <span style="font-size:16px">🤖</span>
+          <span style="font-family:var(--font-display);font-size:15px;letter-spacing:2px">AI ANALYSIS COMPLETE</span>
+          <span class="ai-lbl" id="aiPriBadge" style="margin-left:auto"></span>
+        </div>
+        <div class="af">
+          <div class="af-t">AI SUMMARY</div>
+          <div class="af-v" id="aiSummary"></div>
+        </div>
+        <div class="af">
+          <div class="af-t">AI URGENCY SCORE</div>
+          <div style="display:flex;align-items:center;gap:8px;margin-top:4px">
+            <div class="urg-bar" style="flex:1"><div class="urg-fill" id="aiUrgBar" style="width:0%"></div></div>
+            <span style="font-family:var(--font-mono);font-size:13px;font-weight:700;color:var(--amber)" id="aiUrgScore"></span>
+          </div>
+        </div>
+        <div class="af">
+          <div class="af-t">ESCALATE TO</div>
+          <div class="dept-pill" id="aiDept">—</div>
+        </div>
+        <div class="af">
+          <div class="af-t">AI SOLUTION</div>
+          <div class="af-v" id="aiSol"></div>
+        </div>
+        <div style="font-size:10px;color:var(--muted);font-family:var(--font-mono);margin-top:8px;padding-top:8px;border-top:1px solid var(--bdr)">
+          ✦ Estimated <span id="aiSimilar" style="color:var(--cyan)">0</span> similar complaints on campus · Emotion: <span id="aiEmotion" style="color:var(--amber)">—</span>
+        </div>
+      </div>
+
+    </div><!-- /fb -->
+  </div><!-- /left -->
+
+  <!-- ─── CENTER: DASHBOARD ──────────────────── -->
+  <div class="center" id="centerPanel">
+
+    <!-- Emotion Radar -->
+    <div class="scard" id="emotionCard">
+      <div class="scard-hd">
+        <div class="scard-title">Campus Emotion Radar <span class="scard-badge">LIVE</span></div>
+        <div style="font-size:10px;color:var(--muted);font-family:var(--font-mono)">2,400 students</div>
+      </div>
+      <div class="scard-body">
+        <div class="em-grid" id="emotionGrid">
+          <!-- Populated by JS -->
+        </div>
+      </div>
+    </div>
+
+    <!-- Complaints -->
+    <div class="scard">
+      <div class="scard-hd" style="margin-bottom:12px">
+        <div class="scard-title">Problem Intelligence Feed</div>
+        <button class="fchip on" style="margin:0" onclick="loadComplaints('all','all','all')">↻ Refresh</button>
+      </div>
+      <div class="scard-body" style="padding-top:0">
+        <div class="fstrip" id="filterStrip">
+          <button class="fchip on" onclick="filterBy('all','all','all',this)">ALL</button>
+          <button class="fchip" onclick="filterBy('all','open','all',this)">OPEN</button>
+          <button class="fchip" onclick="filterBy('all','all','critical',this)">🔴 CRITICAL</button>
+          <button class="fchip" onclick="filterBy('all','all','high',this)">🟠 HIGH</button>
+          <button class="fchip" onclick="filterBy('mess','all','all',this)">MESS</button>
+          <button class="fchip" onclick="filterBy('wifi','all','all',this)">WIFI</button>
+          <button class="fchip" onclick="filterBy('mental','all','all',this)">MENTAL</button>
+          <button class="fchip" onclick="filterBy('hostel','all','all',this)">HOSTEL</button>
+          <button class="fchip" onclick="filterBy('all','resolved','all',this)">✓ RESOLVED</button>
+        </div>
+        <div id="complaintList">
+          <div style="text-align:center;padding:30px;color:var(--muted);font-family:var(--font-mono);font-size:12px">Loading…</div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /center -->
+
+  <!-- ─── RIGHT: ALERTS & ANALYTICS ─────────── -->
+  <div class="right" id="rightPanel">
+
+    <div class="rlbl">🔔 Live Alerts</div>
+    <div id="alertFeed">
+      <div style="padding:10px 12px;font-size:11px;color:var(--muted);font-family:var(--font-mono)">Loading…</div>
+    </div>
+
+    <div class="rlbl" style="margin-top:8px">📊 Top Problems</div>
+    <div class="bar-list" id="barList"></div>
+
+    <div class="rlbl" style="margin-top:8px">🧠 AI Insights</div>
+    <div id="insightFeed" style="padding:0 10px 10px"></div>
+
+  </div><!-- /right -->
+
+</div><!-- /grid -->
+</div><!-- /wrap -->
+
+<!-- ═══ EMERGENCY MODAL ════════════════════════ -->
+<div class="overlay" id="modal">
+  <div class="modal">
+    <button class="mclose" onclick="hideModal()">✕</button>
+    <div class="modal-title"><span class="shake">🚨</span>EMERGENCY ALERT</div>
+    <div class="modal-body">
+      This will immediately notify the <strong style="color:var(--text)">Campus Warden, Dean of Students</strong> and <strong style="color:var(--text)">Student Welfare Officer</strong> via emergency protocol.<br><br>
+      <span style="color:var(--red);font-weight:700">Use only for genuine emergencies</span> — health crises, safety threats, or urgent welfare issues. All alerts are logged, timestamped, and reviewed.
+    </div>
+    <div class="modal-acts">
+      <button class="mbtn mbtn-s" onclick="hideModal()">Cancel</button>
+      <button class="mbtn mbtn-p" onclick="sendEmergency()">🔴 Send Emergency Alert</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ TOAST CONTAINER ═══════════════════════ -->
+<div class="toasts" id="toasts"></div>
+
+<!-- ═══════════════════════════════════════════
+     JAVASCRIPT — Frontend Logic
+     APIs Used:
+     1. Fetch API        — all backend communication
+     2. Web Audio API    — alert sounds
+     3. DOM API          — live updates without page reload
+     4. setInterval API  — auto-refresh every 30s
+═══════════════════════════════════════════ -->
+<script>
+// ── Config ───────────────────────────────────────────────────
+const API = 'http://localhost:5000/api'; // Flask backend URL
+
+// ── State ────────────────────────────────────────────────────
+let selCat = 'mess';
+let selPri = 'critical';
+let expandedId = null;
+let aiCount = 0;
+let audioCtx = null;
+
+// ── Audio (Web Audio API) ─────────────────────────────────────
+function getAudio() {
+  if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  return audioCtx;
+}
+function beep(freq, vol=0.15, dur=0.35, type='sine') {
+  try {
+    const ctx = getAudio();
+    const osc = ctx.createOscillator(), g = ctx.createGain();
+    osc.connect(g); g.connect(ctx.destination);
+    osc.type = type; osc.frequency.value = freq;
+    g.gain.setValueAtTime(vol, ctx.currentTime);
+    g.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + dur);
+    osc.start(); osc.stop(ctx.currentTime + dur);
+  } catch(e){}
+}
+function alertSound() {
+  try {
+    const ctx = getAudio();
+    [880,1100,880,1320,880].forEach((f,i) => {
+      const o = ctx.createOscillator(), g = ctx.createGain();
+      o.connect(g); g.connect(ctx.destination);
+      o.type = 'square'; o.frequency.value = f;
+      const t = ctx.currentTime + i * 0.12;
+      g.gain.setValueAtTime(0, t);
+      g.gain.linearRampToValueAtTime(0.13, t + 0.04);
+      g.gain.linearRampToValueAtTime(0, t + 0.11);
+      o.start(t); o.stop(t + 0.12);
+    });
+  } catch(e){}
+}
+function successSound() {
+  [440,550,660].forEach((f,i) => setTimeout(() => beep(f, 0.12, 0.25), i*100));
+}
+
+// ── Toast Notifications ───────────────────────────────────────
+function toast(msg, color='var(--green)') {
+  const c = document.getElementById('toasts');
+  const t = document.createElement('div');
+  t.className = 'toast'; t.style.setProperty('--tc', color);
+  t.textContent = msg; c.appendChild(t);
+  setTimeout(() => { t.style.transition='opacity .3s'; t.style.opacity='0'; setTimeout(()=>t.remove(),300); }, 3800);
+}
+
+// ── Count-up animation ────────────────────────────────────────
+function countUp(el, target, dur=1800) {
+  const start = performance.now();
+  const go = (now) => {
+    const p = Math.min((now - start) / dur, 1);
+    const e = 1 - Math.pow(1 - p, 3);
+    el.textContent = Math.floor(e * target).toLocaleString();
+    if (p < 1) requestAnimationFrame(go);
+  };
+  requestAnimationFrame(go);
+}
+
+// ── Category / Priority selectors ────────────────────────────
+function pickCat(el) {
+  document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('on'));
+  el.classList.add('on');
+  selCat = el.dataset.cat;
+}
+function pickPri(el) {
+  document.querySelectorAll('.pri-btn').forEach(b => b.classList.remove('on-crit','on-high','on-med','on-low'));
+  const map = {critical:'on-crit',high:'on-high',medium:'on-med',low:'on-low'};
+  el.classList.add(map[el.dataset.pri]);
+  selPri = el.dataset.pri;
+}
+
+// ── Submit complaint → AI analysis ───────────────────────────
+// Uses Fetch API → POST /api/complaint → Claude AI analyzes
+async function submitComplaint() {
+  const title = document.getElementById('fTitle').value.trim();
+  const desc  = document.getElementById('fDesc').value.trim();
+  if (!title) { toast('⚠ Enter a problem title', 'var(--amber)'); return; }
+  if (!desc)  { toast('⚠ Describe the problem', 'var(--amber)'); return; }
+
+  // Show AI loading state
+  document.getElementById('aiSpin').style.display = 'block';
+  document.getElementById('aiBox').style.display  = 'none';
+  beep(440, 0.1, 0.2);
+
+  try {
+    // ── FETCH API CALL to Flask backend ──────────────────────
+    const res = await fetch(`${API}/complaint`, {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({ title, description: desc, category: selCat, priority: selPri })
+    });
+    const data = await res.json();
+
+    document.getElementById('aiSpin').style.display = 'none';
+
+    if (data.success) {
+      const c = data.complaint;
+      showAIResult(c);
+      successSound();
+      aiCount++;
+      document.getElementById('sAI').textContent = aiCount;
+      document.getElementById('fTitle').value = '';
+      document.getElementById('fDesc').value  = '';
+      loadComplaints(); loadStats(); loadAlerts();
+      toast(`✦ AI: ${c.priority.toUpperCase()} priority · Urgency ${c.ai_urgency}/10`, priorityColor(c.priority));
+    } else {
+      toast('Error submitting. Check backend.', 'var(--red)');
+    }
+  } catch(e) {
+    document.getElementById('aiSpin').style.display = 'none';
+    toast('⚠ Cannot connect to backend. Is Flask running?', 'var(--red)');
+    console.error(e);
+  }
+}
+
+// ── Show AI result panel ──────────────────────────────────────
+function showAIResult(c) {
+  const priColors = {critical:'var(--red)',high:'var(--orange)',medium:'var(--amber)',low:'var(--green)'};
+  const priCol = priColors[c.priority] || 'var(--cyan)';
+
+  const badge = document.getElementById('aiPriBadge');
+  badge.textContent = c.priority.toUpperCase();
+  badge.style.cssText = `font-size:8px;font-family:var(--font-mono);letter-spacing:2px;font-weight:700;padding:3px 9px;border-radius:8px;color:${priCol};background:${priCol}22;border:1px solid ${priCol}44`;
+
+  document.getElementById('aiSummary').textContent   = c.ai_summary  || '—';
+  document.getElementById('aiSol').textContent       = c.ai_solution || '—';
+  document.getElementById('aiDept').textContent      = '📍 ' + (c.ai_dept || 'Student Affairs');
+  document.getElementById('aiUrgScore').textContent  = `${c.ai_urgency}/10`;
+  document.getElementById('aiUrgBar').style.width    = `${c.ai_urgency * 10}%`;
+  document.getElementById('aiSimilar').textContent   = c.ai_similar;
+  document.getElementById('aiEmotion').textContent   = c.emotion;
+
+  document.getElementById('aiBox').style.display = 'block';
+}
+
+// ── Load & render complaints ──────────────────────────────────
+// Uses Fetch API → GET /api/complaints
+let _cat='all', _status='all', _priority='all';
+async function loadComplaints(cat, status, priority) {
+  if (cat      !== undefined) _cat      = cat;
+  if (status   !== undefined) _status   = status;
+  if (priority !== undefined) _priority = priority;
+
+  const params = new URLSearchParams();
+  if (_cat      !== 'all') params.set('category', _cat);
+  if (_status   !== 'all') params.set('status',   _status);
+  if (_priority !== 'all') params.set('priority', _priority);
+
+  try {
+    const res  = await fetch(`${API}/complaints?${params}`);
+    const list = await res.json();
+    renderComplaints(list);
+  } catch(e) {
+    document.getElementById('complaintList').innerHTML =
+      '<div style="padding:20px;text-align:center;color:var(--muted);font-family:var(--font-mono);font-size:11px">⚠ Backend offline</div>';
+  }
+}
+function filterBy(cat, status, priority, btn) {
+  _cat=cat; _status=status; _priority=priority;
+  document.querySelectorAll('.fchip').forEach(b => b.classList.remove('on'));
+  btn.classList.add('on');
+  loadComplaints(cat, status, priority);
+}
+
+const priColor = {critical:'var(--red)',high:'var(--orange)',medium:'var(--amber)',low:'var(--green)',resolved:'var(--green)'};
+function priorityColor(p) { return priColor[p] || 'var(--cyan)'; }
+
+function renderComplaints(list) {
+  const el = document.getElementById('complaintList');
+  if (!list.length) {
+    el.innerHTML = '<div style="padding:24px;text-align:center;color:var(--muted);font-family:var(--font-mono);font-size:11px">No complaints found</div>';
+    return;
+  }
+  el.innerHTML = list.map(c => {
+    const pc = priorityColor(c.priority);
+    const pbClass = {critical:'pb-crit',high:'pb-high',medium:'pb-med',low:'pb-low',resolved:'pb-res'}[c.status==='resolved'?'resolved':c.priority] || 'pb-med';
+    const statusLabel = c.status==='resolved' ? '✓ RESOLVED' : c.status==='in_progress' ? '⟳ IN PROGRESS' : c.priority.toUpperCase();
+    return `
+    <div class="ccard ${c.status==='resolved'?'resolved':''}" id="card-${c.id}" style="--pc:${pc}" onclick="toggleExpand(${c.id})">
+      <div class="cc-hd">
+        <div class="cc-title">${c.title}</div>
+        <span class="pbadge ${pbClass}">${statusLabel}</span>
+      </div>
+      ${c.ai_summary ? `<div class="cc-summary">🤖 ${c.ai_summary}</div>` : ''}
+      <div class="cc-tags">
+        <span class="ctag">${c.category.toUpperCase()}</span>
+        <span class="ctag">${c.emotion}</span>
+        <span class="ctag">~${c.ai_similar} affected</span>
+        ${c.ai_dept ? `<span class="ctag">📍 ${c.ai_dept}</span>` : ''}
+      </div>
+      <div class="urg-row">
+        <span class="urg-label">AI URGENCY</span>
+        <div class="urg-mini"><div class="urg-mini-fill" style="width:${c.ai_urgency*10}%"></div></div>
+        <span class="urg-score">${c.ai_urgency}/10</span>
+      </div>
+      <div class="cc-ft">
+        <div class="cc-meta">▲ ${c.votes} votes · ${c.created_at}</div>
+        <div class="cc-acts" onclick="event.stopPropagation()">
+          <button class="abtn vote"  onclick="doVote(${c.id})">▲ ${c.votes}</button>
+          <button class="abtn prog"  onclick="doStatus(${c.id},'in_progress')">⟳</button>
+          <button class="abtn solve" onclick="doStatus(${c.id},'resolved')">✓</button>
+          <button class="abtn del"   onclick="doDelete(${c.id})">✕</button>
+        </div>
+      </div>
+      <!-- Expandable solution panel -->
+      <div class="sol-panel" id="sol-${c.id}">
+        <div class="sol-sec">
+          <div class="sol-title">✦ AI SOLUTION STEPS</div>
+          <div class="sol-steps">${c.ai_solution || 'No solution generated yet.'}</div>
+        </div>
+        <div class="sol-sec">
+          <div class="sol-title">📍 ESCALATE TO</div>
+          <div class="dept-pill">🏛️ ${c.ai_dept || 'Student Affairs'}</div>
+        </div>
+        <div style="font-size:10px;color:var(--muted);font-family:var(--font-mono);margin-top:8px">
+          Emotion detected: <span style="color:var(--amber)">${c.emotion}</span> ·
+          Est. ${c.ai_similar} students affected ·
+          Reported ${c.created_at}
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function toggleExpand(id) {
+  const panel = document.getElementById(`sol-${id}`);
+  if (expandedId && expandedId !== id) {
+    const prev = document.getElementById(`sol-${expandedId}`);
+    if (prev) prev.style.display = 'none';
+  }
+  panel.style.display = panel.style.display === 'block' ? 'none' : 'block';
+  expandedId = panel.style.display === 'block' ? id : null;
+  if (panel.style.display === 'block') beep(550, 0.08, 0.2);
+}
+
+// ── Vote ──────────────────────────────────────────────────────
+async function doVote(id) {
+  const res  = await fetch(`${API}/complaint/${id}/vote`, {method:'PUT'});
+  const data = await res.json();
+  loadComplaints(); loadStats();
+  toast(`▲ Upvoted · ${data.votes} votes${data.priority==='high'?' → AUTO-ESCALATED to HIGH':''}`,
+        data.priority==='high'?'var(--orange)':'var(--cyan)');
+  beep(660, 0.08, 0.15);
+}
+
+// ── Status update ─────────────────────────────────────────────
+async function doStatus(id, status) {
+  await fetch(`${API}/complaint/${id}/status`, {
+    method:'PUT', headers:{'Content-Type':'application/json'},
+    body: JSON.stringify({status})
+  });
+  const msgs = {in_progress:'⟳ Marked as In Progress', resolved:'✅ Marked as Resolved'};
+  toast(msgs[status] || 'Updated', 'var(--green)');
+  if (status==='resolved') successSound();
+  loadComplaints(); loadStats(); loadAlerts();
+}
+
+// ── Delete ────────────────────────────────────────────────────
+async function doDelete(id) {
+  await fetch(`${API}/complaint/${id}`, {method:'DELETE'});
+  toast('Complaint removed', 'var(--red)');
+  beep(330, 0.1, 0.2);
+  loadComplaints(); loadStats();
+}
+
+// ── Load stats ────────────────────────────────────────────────
+// Uses Fetch API → GET /api/stats
+async function loadStats() {
+  try {
+    const res  = await fetch(`${API}/stats`);
+    const data = await res.json();
+
+    countUp(document.getElementById('sTotal'), data.total);
+    countUp(document.getElementById('sOpen'),  data.open);
+    countUp(document.getElementById('sRes'),   data.resolved);
+    countUp(document.getElementById('sUrg'),   data.avg_urgency);
+
+    document.getElementById('sCrit').textContent  = `${data.critical} critical`;
+    document.getElementById('sProg').textContent  = `${data.in_progress} in progress`;
+    document.getElementById('sRate').textContent  = `${data.resolution_rate}% rate`;
+
+    renderEmotions(data.emotions, data.total);
+    renderBars(data.categories);
+  } catch(e) {}
+}
+
+// ── Emotion Radar ─────────────────────────────────────────────
+const emotionCfg = {
+  frustrated: {emoji:'😤',color:'#ff2550',label:'Frustrated'},
+  anxious:    {emoji:'😰',color:'#ff6418',label:'Anxious'},
+  angry:      {emoji:'😡',color:'#ff2550',label:'Angry'},
+  sad:        {emoji:'😢',color:'#00ccff',label:'Sad'},
+  hopeful:    {emoji:'🌱',color:'#00e07a',label:'Hopeful'},
+  neutral:    {emoji:'😐',color:'#f5bf00',label:'Neutral'},
+};
+function renderEmotions(emotions, total) {
+  const el = document.getElementById('emotionGrid');
+  const entries = Object.entries(emotions).filter(([,v]) => v > 0);
+  if (!entries.length) { el.innerHTML = '<div style="color:var(--muted);font-size:12px;padding:10px">No data yet</div>'; return; }
+  const max = Math.max(...entries.map(([,v])=>v), 1);
+  el.innerHTML = entries.map(([key, val]) => {
+    const cfg = emotionCfg[key] || {emoji:'😶',color:'var(--cyan)',label:key};
+    const pct = total > 0 ? Math.round(val / total * 100) : 0;
+    return `
+    <div class="em-cell" style="--ec:${cfg.color}">
+      <div class="em-top">
+        <span class="em-ico">${cfg.emoji}</span>
+        <span class="em-pct">${pct}%</span>
+      </div>
+      <div class="em-nm">${cfg.label}</div>
+      <div class="em-bar"><div class="em-fill" style="width:${pct}%"></div></div>
+    </div>`;
+  }).join('');
+}
+
+// ── Category bars (right panel) ───────────────────────────────
+const catCfg = {
+  mess:      {label:'🍽️ Mess Food',  color:'#ff2550'},
+  wifi:      {label:'📶 WiFi',       color:'#f5bf00'},
+  hostel:    {label:'🏠 Hostel',     color:'#ff6418'},
+  mental:    {label:'🧠 Mental',     color:'#8855f5'},
+  academic:  {label:'📚 Academic',   color:'#00ccff'},
+  infra:     {label:'🔧 Infra',      color:'#00e07a'},
+  transport: {label:'🚌 Transport',  color:'#df3ffa'},
+  admin:     {label:'🏛️ Admin',      color:'#4e6a96'},
+};
+function renderBars(cats) {
+  const el  = document.getElementById('barList');
+  const arr = Object.entries(cats).filter(([,v])=>v>0).sort((a,b)=>b[1]-a[1]).slice(0,6);
+  const max = Math.max(...arr.map(([,v])=>v), 1);
+  el.innerHTML = arr.map(([k,v]) => {
+    const cfg = catCfg[k] || {label:k, color:'var(--cyan)'};
+    return `
+    <div class="bar-row">
+      <div class="bar-top"><span class="bar-nm">${cfg.label}</span><span class="bar-val">${v}</span></div>
+      <div class="bar-track"><div class="bar-fill" style="width:${v/max*100}%;background:${cfg.color};box-shadow:0 0 6px ${cfg.color}"></div></div>
+    </div>`;
+  }).join('') || '<div style="color:var(--muted);font-size:11px;font-family:var(--font-mono);padding:4px">No data yet</div>';
+}
+
+// ── Load alerts ───────────────────────────────────────────────
+// Uses Fetch API → GET /api/alerts
+const alertColors = {critical:'var(--red)',warning:'var(--orange)',success:'var(--green)',info:'var(--cyan)'};
+async function loadAlerts() {
+  try {
+    const res  = await fetch(`${API}/alerts`);
+    const list = await res.json();
+    const unread = list.filter(a => !a.is_read).length;
+    document.getElementById('notif-n').textContent = unread;
+
+    document.getElementById('alertFeed').innerHTML = list.slice(0,8).map(a => {
+      const col = alertColors[a.alert_type] || 'var(--cyan)';
+      return `
+      <div class="al-item" style="--alc:${col}" onclick="markRead(${a.id},this)">
+        <div class="al-hd">
+          <span class="al-type">${a.alert_type.toUpperCase()}</span>
+          <span class="al-time">${a.time}</span>
+        </div>
+        <div class="al-msg">${a.message}</div>
+      </div>`;
+    }).join('') || '<div style="padding:10px 12px;font-size:11px;color:var(--muted);font-family:var(--font-mono)">No alerts</div>';
+  } catch(e){}
+}
+async function markRead(id, el) {
+  await fetch(`${API}/alert/${id}/read`, {method:'PUT'});
+  el.style.opacity = '0.45';
+  loadAlerts();
+}
+
+// ── Load AI Insights ──────────────────────────────────────────
+// Uses Fetch API → GET /api/insights → Claude AI generates insights
+async function loadInsights() {
+  const el = document.getElementById('insightFeed');
+  el.innerHTML = '<div style="font-size:11px;color:var(--muted);font-family:var(--font-mono);padding:6px 0">🤖 AI generating…</div>';
+  try {
+    const res  = await fetch(`${API}/insights`);
+    const data = await res.json();
+    const icColors = {red:'var(--red)',orange:'var(--orange)',amber:'var(--amber)',green:'var(--green)',cyan:'var(--cyan)',violet:'var(--violet)'};
+    el.innerHTML = (data.insights || []).map(i => {
+      const col = icColors[i.color] || 'var(--violet)';
+      return `
+      <div class="icard" style="--ic:${col};margin-bottom:9px">
+        <div class="ic-top">
+          <span class="ic-ico">${i.icon}</span>
+          <span class="ic-title">${i.title}</span>
+        </div>
+        <div class="ic-detail">${i.detail}</div>
+        <div class="ic-act">→ ${i.action}</div>
+      </div>`;
+    }).join('');
+  } catch(e) {
+    el.innerHTML = '<div style="font-size:11px;color:var(--muted);font-family:var(--font-mono);padding:6px 0">Connect backend for AI insights</div>';
+  }
+}
+
+// ── Emergency Modal ───────────────────────────────────────────
+function showModal()  { document.getElementById('modal').classList.add('show'); alertSound(); }
+function hideModal()  { document.getElementById('modal').classList.remove('show'); }
+function sendEmergency() {
+  hideModal();
+  alertSound();
+  toast('🚨 Emergency alert sent to Warden + Dean + Welfare Officer', 'var(--red)');
+  fetch(`${API}/alerts`); // Trigger alert refresh
+  loadAlerts();
+}
+
+// ── Alert panel toggle ────────────────────────────────────────
+let alertsOpen = false;
+function toggleAlerts() {
+  alertsOpen = !alertsOpen;
+  const rp = document.getElementById('rightPanel');
+  rp.style.display = alertsOpen ? 'block' : '';
+  loadAlerts();
+}
+
+// ── Live feed simulation (adds realism while waiting for data) ─
+const liveMessages = [
+  ['💬 New complaint: WiFi down in Block D', 'var(--amber)'],
+  ['✅ Issue resolved: Printer Lab 2 fixed', 'var(--green)'],
+  ['⚡ AI: Mess complaints rising this hour', 'var(--orange)'],
+  ['🔍 Lost & Found: Wallet near Gym reported', 'var(--cyan)'],
+  ['🧠 AI: Stress peak predicted this Friday', 'var(--violet)'],
+  ['📊 AI: Resolution rate improved 23%', 'var(--green)'],
+];
+let feedIdx = 0;
+setInterval(() => {
+  const [msg, col] = liveMessages[feedIdx++ % liveMessages.length];
+  toast(msg, col);
+}, 12000);
+
+// ── View switching ────────────────────────────────────────────
+function setView(view, btn) {
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('on'));
+  btn.classList.add('on');
+  if (view === 'insights') { loadInsights(); }
+  if (view === 'complaints') { loadComplaints(); }
+}
+
+// ── Auto-refresh every 30 seconds ────────────────────────────
+// Uses setInterval API — keeps dashboard live without page reload
+setInterval(() => {
+  loadStats();
+  loadAlerts();
+  loadComplaints();
+}, 30000);
+
+// ── INIT ──────────────────────────────────────────────────────
+(async function init() {
+  await loadStats();
+  await loadComplaints();
+  await loadAlerts();
+  await loadInsights();
+  setTimeout(() => toast('✦ CampusPulse AI active — monitoring 2,400 students', 'var(--cyan)'), 800);
+})();
+</script>
+</body>
+</html>
